@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photo Prompt Bench</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0c0e; --panel:#141417; --line:#26262b; --text:#ededf0; --muted:#8d8d96;
+  --accent:#d4ff3a; --real:#7cc4ff; --stress:#ff9d5c; --pick:#ffd23a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,sans-serif}
+a{color:inherit}
+header.top{max-width:1480px;margin:0 auto;padding:48px 24px 24px}
+h1{font-size:40px;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em;font-weight:700}
+.lede{color:var(--muted);max-width:820px;margin:0 0 20px}
+.legend{display:flex;flex-wrap:wrap;gap:10px 20px;color:var(--muted);font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--line);border-radius:999px}
+.dot{width:8px;height:8px;border-radius:50%}
+nav.toc{position:sticky;top:0;z-index:5;background:rgba(12,12,14,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.toc .in{max-width:1480px;margin:0 auto;padding:10px 24px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav.toc a{flex:none;text-decoration:none;font-size:12px;padding:4px 8px;border-radius:6px;color:var(--muted);border:1px solid transparent}
+nav.toc a.R{color:var(--real)} nav.toc a.S{color:var(--stress)}
+nav.toc a.picked{border-color:var(--pick)}
+main{max-width:1480px;margin:0 auto;padding:8px 24px 140px}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:24px;margin:28px 0;scroll-margin-top:60px}
+.card.picked{border-color:var(--pick);box-shadow:0 0 0 1px var(--pick) inset}
+.head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.tag{font:600 12px Inter;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;margin-right:10px}
+.R .tag{background:rgba(124,196,255,.14);color:var(--real)} .S .tag{background:rgba(255,157,92,.14);color:var(--stress)}
+h2{display:inline;font-size:24px;margin:0;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:13px;margin-top:6px}
+.pick{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:999px;padding:8px 16px;font:600 14px Inter;cursor:pointer}
+.pick[aria-pressed=true]{background:var(--pick);color:#111;border-color:var(--pick)}
+.brief{margin:14px 0 0;max-width:980px}
+.brief b{color:var(--muted);font-weight:500}
+.sheet{margin:20px 0 12px}.sheet .ph{border-radius:10px}
+.scores{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0 0 16px}
+.sc{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px}.sc.best{border-color:var(--accent)}.sc.best b::after{content:" · best";color:var(--accent);font-weight:600}
+figure{margin:0;display:flex;flex-direction:column;gap:8px}
+.ph{background:#0a0a0c;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:zoom-in;position:relative}
+.ph img{width:100%;height:100%;object-fit:contain;display:block}
+.ph.missing{cursor:default;color:var(--muted);font-size:13px}
+.win{position:absolute;top:8px;left:8px;background:var(--accent);color:#111;font:700 11px Inter;padding:3px 7px;border-radius:6px}
+figcaption{font-size:13px;display:flex;justify-content:space-between;gap:8px}
+figcaption span{color:var(--muted)}
+.score{font-weight:700}
+.sum{color:var(--muted);font-size:12px;line-height:1.4}
+details{border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;color:var(--muted);font-size:13px}
+.prompt{position:relative;margin-top:4px}
+.prompt pre{white-space:pre-wrap;word-break:break-word;background:#0a0a0c;border:1px solid var(--line);border-radius:10px;padding:16px 16px 16px;margin:0;font:13px/1.6 "JetBrains Mono",ui-monospace,monospace;color:#d8d8de}
+.row{display:flex;gap:10px;align-items:center;margin:10px 0 8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#1b1b1f;color:var(--text);border-radius:8px;padding:6px 12px;font:500 13px Inter;cursor:pointer}
+.btn:hover{border-color:#3a3a42}
+ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;columns:2;column-gap:32px}
+.note{color:var(--muted);font-size:13px;margin-top:8px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:rgba(20,20,23,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
+.bar .in{max-width:1480px;margin:0 auto;padding:12px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .list{flex:1;min-width:200px;color:var(--muted);font-size:14px}
+.bar .list b{color:var(--pick)}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.94);display:none;z-index:10;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:20px}
+#lb.on{display:flex}
+#lb img{max-width:96vw;max-height:88vh;object-fit:contain}
+#lb .cap{color:var(--muted);font-size:14px}
+@media (max-width:1100px){.scores{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:700px){
+  header.top{padding:32px 16px 16px} main{padding:8px 16px 160px} nav.toc .in,.bar .in{padding-left:16px;padding-right:16px}
+  h1{font-size:30px} .card{padding:16px} .scores{grid-template-columns:repeat(2,minmax(0,1fr))} ul.checks{columns:1}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Photo Prompt Bench</h1>
+  <p class="lede">60 prompts, each run unchanged on five image models. Cards alternate between a <b style="color:var(--real)">real case</b> written to a client brief (film stills, ads, e-commerce, production assets) and a <b style="color:var(--stress)">stress test</b> built to break the models (exact text, counts, logic, anatomy). Each card shows one comparison sheet (five models side by side, same prompt) — click it to open it large. Star the prompts you want to use, then copy your list at the bottom and send it back.</p>
+  <div class="legend">
+    <span class="chip"><span class="dot" style="background:var(--real)"></span>Real case R01–R30</span>
+    <span class="chip"><span class="dot" style="background:var(--stress)"></span>Stress test S01–S30</span>
+    <span class="chip">GPT Image 2.5 · high 4K</span><span class="chip">Nano Banana Pro · 4K</span><span class="chip">Seedream 5.0 Pro · 2K</span><span class="chip">Ideogram 4.5 · high 2K (21:9 → 22:9)</span><span class="chip">FLUX 3 · 2K</span>
+  </div>
+</header>
+<nav class="toc"><div class="in" id="toc"></div></nav>
+<main id="cards"></main>
+<div class="bar"><div class="in">
+  <div class="list" id="picks">No prompts picked yet.</div>
+  <input id="who" class="btn" placeholder="Your name" style="width:150px">
+  <button class="btn" id="copy">Copy my picks</button>
+  <button class="btn" id="clear">Clear</button>
+</div></div>
+<div id="lb" role="dialog" aria-modal="true"><img alt=""><div class="cap"></div></div>
+<script src="data.js?v=1"></script>
+<script>
+(() => {
+  const data = window.BENCH || [];
+  const KEY = "bench-picks-v1";
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { return []; } };
+  const save = v => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} };
+  let picks = load();
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const ratio = ar => ar.replace(":", " / ");
+
+  const toc = document.getElementById("toc"), main = document.getElementById("cards");
+  data.forEach(c => {
+    const t = c.key[0];
+    toc.insertAdjacentHTML("beforeend", `<a href="#${c.key}" class="${t}" data-k="${c.key}">${c.key}</a>`);
+    const sheet = c.sheet
+      ? `<div class="ph" data-full="${c.sheet}" data-cap="${esc(c.key + " · " + c.title)}"><img loading="lazy" src="${c.sheet}" alt="${esc(c.title)} — 5 models"></div>`
+      : `<div class="ph missing" style="aspect-ratio:3/1">Generating…</div>`;
+    const scores = c.scores.length ? `<div class="scores">${c.scores.map(x => `<div class="sc${x.model === c.winner ? " best" : ""}"><b>${esc(x.model)}</b> <span class="score">${x.score}/10</span><div class="sum">${esc(x.summary)}</div></div>`).join("")}</div>` : "";
+    main.insertAdjacentHTML("beforeend", `
+      <section class="card ${t}" id="${c.key}">
+        <div class="head">
+          <div><span class="tag">${c.key} · ${esc(c.kind)}</span><h2>${esc(c.title)}</h2>
+            <div class="meta">${esc(c.cat)} · aspect ratio ${esc(c.ar)}</div></div>
+          <button class="pick" data-k="${c.key}" aria-pressed="false">☆ Pick this prompt</button>
+        </div>
+        ${c.brief ? `<p class="brief"><b>Client brief:</b> ${esc(c.brief)}</p>` : ""}
+        <div class="sheet">${sheet}</div>${scores}
+        ${c.note ? `<div class="note">Judges: ${esc(c.note)}</div>` : ""}
+        <div class="prompt">
+          <div class="row"><b>Prompt</b><button class="btn copyp" data-k="${c.key}">Copy prompt</button></div>
+          <pre>${esc(c.prompt)}</pre>
+        </div>
+        <details><summary>What the image must get right (${c.checks.length})</summary>
+          <ul class="checks">${c.checks.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>
+      </section>`);
+  });
+
+  const render = () => {
+    document.querySelectorAll(".pick").forEach(b => {
+      const on = picks.includes(b.dataset.k);
+      b.setAttribute("aria-pressed", on); b.textContent = on ? "★ Picked" : "☆ Pick this prompt";
+      b.closest(".card").classList.toggle("picked", on);
+    });
+    toc.querySelectorAll("a").forEach(a => a.classList.toggle("picked", picks.includes(a.dataset.k)));
+    const el = document.getElementById("picks");
+    el.innerHTML = picks.length ? `Picked <b>${picks.length}</b>: ${picks.map(esc).join(", ")}` : "No prompts picked yet.";
+  };
+  const order = k => data.findIndex(c => c.key === k);
+  document.addEventListener("click", e => {
+    const p = e.target.closest(".pick");
+    if (p) { const k = p.dataset.k; picks = picks.includes(k) ? picks.filter(x => x !== k) : [...picks, k].sort((a, b) => order(a) - order(b)); save(picks); render(); return; }
+    const cp = e.target.closest(".copyp");
+    if (cp) { const c = data.find(x => x.key === cp.dataset.k); navigator.clipboard.writeText(c.prompt).then(() => { cp.textContent = "Copied"; setTimeout(() => cp.textContent = "Copy prompt", 1200); }); return; }
+    const ph = e.target.closest(".ph[data-full]");
+    if (ph) { const lb = document.getElementById("lb"); lb.querySelector("img").src = ph.dataset.full; lb.querySelector(".cap").textContent = ph.dataset.cap; lb.classList.add("on"); return; }
+    if (e.target.closest("#lb")) document.getElementById("lb").classList.remove("on");
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") document.getElementById("lb").classList.remove("on"); });
+  document.getElementById("copy").onclick = () => {
+    const who = document.getElementById("who").value.trim();
+    const txt = (who ? who + " — " : "") + "picks: " + (picks.join(", ") || "none") + "\n" + picks.map(k => `${k} ${data.find(c => c.key === k).title}`).join("\n");
+    navigator.clipboard.writeText(txt).then(() => { const b = document.getElementById("copy"); b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy my picks", 1200); });
+  };
+  document.getElementById("clear").onclick = () => { picks = []; save(picks); render(); };
+  render();
+})();
+</script>
+</body>
+</html>
