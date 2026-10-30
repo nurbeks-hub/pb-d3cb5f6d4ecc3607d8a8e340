@@ -85,10 +85,10 @@ ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;col
 <body>
 <header class="top">
   <h1>Photo Prompt Bench</h1>
-  <p class="lede">60 prompts, each run unchanged on five image models. Cards alternate between a <b style="color:var(--real)">real case</b> written to a client brief (film stills, ads, e-commerce, production assets) and a <b style="color:var(--stress)">stress test</b> built to break the models (exact text, counts, logic, anatomy). Each card shows one comparison sheet (five models side by side, same prompt) — click it to open it large. Star the prompts you want to use, then copy your list at the bottom and send it back.</p>
+  <p class="lede"><span id="count">The</span> shortlisted prompts, each run unchanged on five image models. Cards alternate between a <b style="color:var(--real)">real case</b> written to a client brief (film stills, ads, e-commerce, production assets) and a <b style="color:var(--stress)">stress test</b> built to break the models (exact text, counts, logic, anatomy). Each card shows one comparison sheet (five models side by side, same prompt) — click it to open it large. Star the prompts you want to use, then copy your list at the bottom and send it back.</p>
   <div class="legend">
-    <span class="chip"><span class="dot" style="background:var(--real)"></span>Real case R01–R30</span>
-    <span class="chip"><span class="dot" style="background:var(--stress)"></span>Stress test S01–S30</span>
+    <span class="chip"><span class="dot" style="background:var(--real)"></span>Real case (R)</span>
+    <span class="chip"><span class="dot" style="background:var(--stress)"></span>Stress test (S)</span>
     <span class="chip">GPT Image 2.5 · high 4K</span><span class="chip">Nano Banana Pro · 4K</span><span class="chip">Seedream 5.0 Pro · 2K</span><span class="chip">Ideogram 4.5 · high 2K (21:9 → 22:9)</span><span class="chip">FLUX 3 · 2K</span>
   </div>
 </header>
@@ -102,7 +102,7 @@ ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;col
   <button class="btn" id="clear">Clear</button>
 </div></div>
 <div id="lb" role="dialog" aria-modal="true"><img alt=""><div class="cap"></div></div>
-<script src="data.js?v=1793397761"></script>
+<script src="data.js?v=1793397984"></script>
 <script>
 (() => {
   const data = window.BENCH || [];
@@ -113,8 +113,9 @@ ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;col
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const ratio = ar => ar.replace(":", " / ");
 
+  document.getElementById("count").textContent = data.length;
   const board = window.BOARD || [];
-  if (board.length) document.getElementById("board").innerHTML = `<table><thead><tr><th>Model</th><th>Real cases</th><th>Stress tests</th><th>All 60</th><th>Best on</th></tr></thead><tbody>${board.map(r => `<tr><td><b>${esc(r.model)}</b></td><td class="num">${r.real ?? "—"}</td><td class="num">${r.stress ?? "—"}</td><td class="num"><b>${r.all ?? "—"}</b></td><td class="num">${r.wins} prompts</td></tr>`).join("")}</tbody></table><p class="cap">Average score out of 10 from three independent judges who checked every requirement on full-resolution crops.</p>`;
+  if (board.length) document.getElementById("board").innerHTML = `<table><thead><tr><th>Model</th><th>Real cases</th><th>Stress tests</th><th>All</th><th>Best on</th></tr></thead><tbody>${board.map(r => `<tr><td><b>${esc(r.model)}</b></td><td class="num">${r.real ?? "—"}</td><td class="num">${r.stress ?? "—"}</td><td class="num"><b>${r.all ?? "—"}</b></td><td class="num">${r.wins} prompts</td></tr>`).join("")}</tbody></table><p class="cap">Average score out of 10 from three independent judges who checked every requirement on full-resolution crops.</p>`;
   const toc = document.getElementById("toc"), main = document.getElementById("cards");
   data.forEach(c => {
     const t = c.key[0];
