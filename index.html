@@ -22,6 +22,13 @@ h1{font-size:40px;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em;font-wei
 .legend{display:flex;flex-wrap:wrap;gap:10px 20px;color:var(--muted);font-size:13px}
 .chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--line);border-radius:999px}
 .dot{width:8px;height:8px;border-radius:50%}
+.board{max-width:1480px;margin:0 auto;padding:0 24px 28px}
+.board table{border-collapse:collapse;width:100%;max-width:760px;font-size:14px}
+.board th,.board td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line)}
+.board th{color:var(--muted);font-weight:500}
+.board td.num{font-variant-numeric:tabular-nums}
+.board tr:first-child td{color:var(--accent)}
+.board .cap{color:var(--muted);font-size:13px;margin:8px 0 0}
 nav.toc{position:sticky;top:0;z-index:5;background:rgba(12,12,14,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 nav.toc .in{max-width:1480px;margin:0 auto;padding:10px 24px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 nav.toc a{flex:none;text-decoration:none;font-size:12px;padding:4px 8px;border-radius:6px;color:var(--muted);border:1px solid transparent}
@@ -85,6 +92,7 @@ ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;col
     <span class="chip">GPT Image 2.5 · high 4K</span><span class="chip">Nano Banana Pro · 4K</span><span class="chip">Seedream 5.0 Pro · 2K</span><span class="chip">Ideogram 4.5 · high 2K (21:9 → 22:9)</span><span class="chip">FLUX 3 · 2K</span>
   </div>
 </header>
+<section class="board" id="board"></section>
 <nav class="toc"><div class="in" id="toc"></div></nav>
 <main id="cards"></main>
 <div class="bar"><div class="in">
@@ -94,7 +102,7 @@ ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;col
   <button class="btn" id="clear">Clear</button>
 </div></div>
 <div id="lb" role="dialog" aria-modal="true"><img alt=""><div class="cap"></div></div>
-<script src="data.js?v=1793397500"></script>
+<script src="data.js?v=1793397761"></script>
 <script>
 (() => {
   const data = window.BENCH || [];
@@ -105,6 +113,8 @@ ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;col
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const ratio = ar => ar.replace(":", " / ");
 
+  const board = window.BOARD || [];
+  if (board.length) document.getElementById("board").innerHTML = `<table><thead><tr><th>Model</th><th>Real cases</th><th>Stress tests</th><th>All 60</th><th>Best on</th></tr></thead><tbody>${board.map(r => `<tr><td><b>${esc(r.model)}</b></td><td class="num">${r.real ?? "—"}</td><td class="num">${r.stress ?? "—"}</td><td class="num"><b>${r.all ?? "—"}</b></td><td class="num">${r.wins} prompts</td></tr>`).join("")}</tbody></table><p class="cap">Average score out of 10 from three independent judges who checked every requirement on full-resolution crops.</p>`;
   const toc = document.getElementById("toc"), main = document.getElementById("cards");
   data.forEach(c => {
     const t = c.key[0];
