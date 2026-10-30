@@ -102,7 +102,7 @@ ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;col
   <button class="btn" id="clear">Clear</button>
 </div></div>
 <div id="lb" role="dialog" aria-modal="true"><img alt=""><div class="cap"></div></div>
-<script src="data.js?v=1793398085"></script>
+<script src="data.js?v=1793398131"></script>
 <script>
 (() => {
   const data = window.BENCH || [];
@@ -118,7 +118,7 @@ ul.checks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;col
   if (board.length) document.getElementById("board").innerHTML = `<table><thead><tr><th>Model</th><th>Real cases</th><th>Stress tests</th><th>All</th><th>Best on</th></tr></thead><tbody>${board.map(r => `<tr><td><b>${esc(r.model)}</b></td><td class="num">${r.real ?? "—"}</td><td class="num">${r.stress ?? "—"}</td><td class="num"><b>${r.all ?? "—"}</b></td><td class="num">${r.wins} prompts</td></tr>`).join("")}</tbody></table><p class="cap">Average score out of 10 from three independent judges who checked every requirement on full-resolution crops.</p>`;
   const toc = document.getElementById("toc"), main = document.getElementById("cards");
   data.forEach(c => {
-    const t = c.key[0];
+    const t = (c.src || c.key)[0];
     toc.insertAdjacentHTML("beforeend", `<a href="#${c.key}" class="${t}" data-k="${c.key}">${c.key}</a>`);
     const sheet = c.sheet
       ? `<div class="ph" data-full="${c.sheet}" data-cap="${esc(c.key + " · " + c.title)}"><img loading="lazy" src="${c.sheet}" alt="${esc(c.title)} — 5 models"></div>`
